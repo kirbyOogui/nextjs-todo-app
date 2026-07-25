@@ -1,6 +1,7 @@
 "use client";
 
 import { Todo } from "@/types/todo";
+import { formatDueDate, getDueStatus } from "@/lib/date";
 
 type TodoItemProps = {
   todo: Todo;
@@ -8,7 +9,22 @@ type TodoItemProps = {
   onDelete: (id: string) => void;
 };
 
+// 期限のステータスに応じたバッジの色分け
+const DUE_BADGE_STYLE: Record<string, string> = {
+  overdue: "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400",
+  today: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+  upcoming: "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400",
+};
+
+const DUE_BADGE_LABEL: Record<string, string> = {
+  overdue: "期限切れ",
+  today: "今日まで",
+  upcoming: "",
+};
+
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
+  const dueStatus = getDueStatus(todo.dueDate, todo.completed);
+
   return (
     <li className="group flex items-center gap-3 rounded-lg border border-black/5 bg-white px-4 py-3 transition-colors hover:border-black/10 dark:border-white/10 dark:bg-zinc-900 dark:hover:border-white/20">
       <input
@@ -20,13 +36,23 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
       />
       <label
         htmlFor={`todo-${todo.id}`}
-        className={`flex-1 cursor-pointer break-all text-base leading-6 transition-colors ${
+        className={`flex flex-1 cursor-pointer flex-wrap items-center gap-2 break-all text-base leading-6 transition-colors ${
           todo.completed
             ? "text-zinc-400 line-through dark:text-zinc-600"
             : "text-zinc-900 dark:text-zinc-50"
         }`}
       >
         {todo.text}
+        {todo.dueDate && (
+          <span
+            className={`whitespace-nowrap rounded px-1.5 py-0.5 text-xs font-medium no-underline ${
+              dueStatus ? DUE_BADGE_STYLE[dueStatus] : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+            }`}
+          >
+            {dueStatus && DUE_BADGE_LABEL[dueStatus] ? `${DUE_BADGE_LABEL[dueStatus]} ` : "期限 "}
+            {formatDueDate(todo.dueDate)}
+          </span>
+        )}
       </label>
       <button
         type="button"

@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import {
   addTodo,
+  clearCompleted,
   deleteTodo,
   getServerSnapshot,
   getSnapshot,
@@ -13,5 +14,5 @@ import {
 export function useTodos() {
   const todos = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  return { todos, addTodo, toggleTodo, deleteTodo };
+  return { todos, addTodo, toggleTodo, deleteTodo, clearCompleted };
 }

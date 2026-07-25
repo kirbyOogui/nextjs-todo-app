@@ -36,7 +36,7 @@ export function getServerSnapshot(): Todo[] {
   return EMPTY_TODOS;
 }
 
-export function addTodo(text: string): void {
+export function addTodo(text: string, dueDate: string | null = null): void {
   const trimmed = text.trim();
   if (!trimmed) return;
 
@@ -47,6 +47,7 @@ export function addTodo(text: string): void {
       text: trimmed,
       completed: false,
       createdAt: Date.now(),
+      dueDate,
     },
     ...todos,
   ];
@@ -64,5 +65,12 @@ export function toggleTodo(id: string): void {
 export function deleteTodo(id: string): void {
   ensureInitialized();
   todos = todos.filter((todo) => todo.id !== id);
+  notify();
+}
+
+// 完了済みタスクをまとめて削除する
+export function clearCompleted(): void {
+  ensureInitialized();
+  todos = todos.filter((todo) => !todo.completed);
   notify();
 }
